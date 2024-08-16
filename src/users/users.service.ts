@@ -1,5 +1,6 @@
 import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
 import { eq } from 'drizzle-orm';
 import { users } from 'src/db/schema';
 
@@ -9,6 +10,7 @@ export class UserService {
 
   async registerUser(email: string, phoneNumber: string, password: string) {
     const hashedPassword = await bcrypt.hash(password, 10);
+    const verificationToken = crypto.randomBytes(32).toString('hex');
 
     try {
       const [user] = await this.db
@@ -17,6 +19,7 @@ export class UserService {
           email,
           phoneNumber,
           hashedPassword,
+          verificationToken,
         })
         .returning();
 

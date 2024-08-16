@@ -18,6 +18,7 @@ export const users = pgTable('users', {
   email: varchar('email').notNull().unique(),
   emailConfirmation: boolean('email_confirmation').notNull().default(false),
   hashedPassword: text('hashed_password').notNull(),
+  verificationToken: varchar('verification_token').unique(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
