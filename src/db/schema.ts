@@ -6,14 +6,17 @@ import {
   text,
   timestamp,
   integer,
+  boolean,
 } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
   id: serial('id').primaryKey(),
-  firstName: varchar('first_name').notNull(),
-  lastName: varchar('last_name').notNull(),
+  firstName: varchar('first_name').default(''),
+  lastName: varchar('last_name').default(''),
+  pictureUrl: varchar('picture_url').default(''),
   phoneNumber: varchar('phone_number').notNull().unique(),
   email: varchar('email').notNull().unique(),
+  emailConfirmation: boolean('email_confirmation').notNull().default(false),
   hashedPassword: text('hashed_password').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),

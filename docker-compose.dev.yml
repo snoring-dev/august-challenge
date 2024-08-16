@@ -7,6 +7,7 @@ services:
       - '3000:3000'
     environment:
       - NODE_ENV=development
+      - POSTGRES_URL=${POSTGRES_URL}
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
