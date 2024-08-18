@@ -1,7 +1,17 @@
-import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { UserService } from './users.service';
 import { VerifyEmailDto } from './dto/verify-email.dto';
+import { UpdateUserInfoDto } from './dto/update-user-info.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -35,5 +45,15 @@ export class UsersController {
       throw new BadRequestException('Email is required');
     }
     return this.usersService.resendVerificationCode(email);
+  }
+
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  async updateUserInfo(
+    @Param('id') id: string,
+    @Body() updateUserInfoDto: UpdateUserInfoDto,
+  ) {
+    const userId = parseInt(id, 10);
+    return this.usersService.updateUserInfo(userId, updateUserInfoDto);
   }
 }
