@@ -15,6 +15,20 @@
       "when": 1723733098948,
       "tag": "0001_nervous_archangel",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1723815962365,
+      "tag": "0002_heavy_champions",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1723829305680,
+      "tag": "0003_wealthy_forge",
+      "breakpoints": true
     }
   ]
 }
