@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Param,
   ParseIntPipe,
   Patch,
@@ -70,5 +71,11 @@ export class UsersController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     return this.usersService.updateProfilePicture(id, file);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get(':id/profile-picture-url')
+  async getProfilePictureUrl(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.getProfilePictureUrl(id);
   }
 }

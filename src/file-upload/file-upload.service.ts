@@ -10,7 +10,7 @@ export class FileUploadService {
     return this.s3Service.uploadFile(file, key);
   }
 
-  async getSignedUrl(key: string): Promise<string> {
-    return this.s3Service.getSignedUrl(key);
+  async getPresignedUrl(key: string): Promise<string> {
+    return this.s3Service.getPresignedUrl(key);
   }
 }

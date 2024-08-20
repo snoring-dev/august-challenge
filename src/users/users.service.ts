@@ -152,15 +152,26 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
 
-    console.log(file);
+    const key = `profile-pictures/${userId}-${Date.now()}-${file.originalname}`;
+    const s3Key = await this.fileUploadService.uploadFile(file, key);
 
-    const pictureUrl = await this.fileUploadService.uploadFile(
-      file,
-      'profile-pictures',
-    );
+    await this.db
+      .update(users)
+      .set({ pictureUrl: s3Key })
+      .where(eq(users.id, userId));
 
-    await this.db.update(users).set({ pictureUrl }).where(eq(users.id, userId));
+    return s3Key;
+  }
 
-    return pictureUrl;
+  async getProfilePictureUrl(userId: number): Promise<string> {
+    const user = await this.db.query.users.findFirst({
+      where: eq(users.id, userId),
+    });
+
+    if (!user || !user.pictureUrl) {
+      throw new NotFoundException('Profile picture not found');
+    }
+
+    return this.fileUploadService.getPresignedUrl(user.pictureUrl);
   }
 }
