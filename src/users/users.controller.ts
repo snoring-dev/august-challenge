@@ -3,15 +3,20 @@ import {
   Body,
   Controller,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { UserService } from './users.service';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { UpdateUserInfoDto } from './dto/update-user-info.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('users')
 export class UsersController {
@@ -55,5 +60,15 @@ export class UsersController {
   ) {
     const userId = parseInt(id, 10);
     return this.usersService.updateUserInfo(userId, updateUserInfoDto);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post(':id/profile-picture')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadProfilePicture(
+    @Param('id', ParseIntPipe) id: number,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.usersService.updateProfilePicture(id, file);
   }
 }
