@@ -7,14 +7,12 @@ import { UsersModule } from './users/users.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { AuthModule } from './auth/auth.module';
 import { FileUploadModule } from './file-upload/file-upload.module';
+import { AddressModule } from './address/address.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     DatabaseModule,
-    UsersModule,
-    AuthModule,
-    FileUploadModule,
     MailerModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -32,6 +30,10 @@ import { FileUploadModule } from './file-upload/file-upload.module';
       }),
       inject: [ConfigService],
     }),
+    UsersModule,
+    AuthModule,
+    FileUploadModule,
+    AddressModule,
   ],
   controllers: [AppController],
   providers: [AppService],
