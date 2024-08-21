@@ -29,6 +29,13 @@
       "when": 1723829305680,
       "tag": "0003_wealthy_forge",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1724215890508,
+      "tag": "0004_careful_slapstick",
+      "breakpoints": true
     }
   ]
 }
