@@ -40,6 +40,23 @@ export const addresses = pgTable('addresses', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
+export const frenchWords = pgTable('french_words', {
+  id: serial('id').primaryKey(),
+  word: varchar('word').notNull().unique(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const definitions = pgTable('definitions', {
+  id: serial('id').primaryKey(),
+  wordId: integer('word_id')
+    .references(() => frenchWords.id)
+    .notNull(),
+  definition: text('definition').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
 export const usersRelations = relations(users, ({ one }) => ({
   address: one(addresses, {
     fields: [users.id],
