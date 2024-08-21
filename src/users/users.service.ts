@@ -4,6 +4,7 @@ import {
   Inject,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import * as bcrypt from 'bcrypt';
@@ -121,6 +122,9 @@ export class UserService {
       firstName: string;
       lastName: string;
       phoneNumber: string;
+      resetCode: string;
+      resetCodeExpires: Date;
+      hashedPassword: string;
     }>,
   ) {
     const user = await this.db.query.users.findFirst({
@@ -173,5 +177,53 @@ export class UserService {
     }
 
     return this.fileUploadService.getPresignedUrl(user.pictureUrl);
+  }
+
+  async generateResetCode(email: string): Promise<string> {
+    const user = await this.getUserByEmail(email);
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    const resetCode = this.generateVerificationCode();
+    const resetCodeExpires = new Date(Date.now() + 3600000);
+
+    await this.updateUserInfo(user.id, {
+      resetCode: resetCode,
+      resetCodeExpires: resetCodeExpires,
+    });
+
+    return resetCode;
+  }
+
+  async verifyResetCode(email: string, code: string): Promise<boolean> {
+    const user = await this.getUserByEmail(email);
+
+    if (
+      !user ||
+      user.resetCode !== code ||
+      user.resetCodeExpires < new Date()
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
+  async resetPassword(email: string, newPassword: string): Promise<void> {
+    const user = await this.getUserByEmail(email);
+
+    if (!user || user.resetCodeExpires < new Date()) {
+      throw new UnauthorizedException('Invalid or expired reset code');
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await this.updateUserInfo(user.id, {
+      hashedPassword: hashedPassword,
+      resetCode: null,
+      resetCodeExpires: null,
+    });
   }
 }
