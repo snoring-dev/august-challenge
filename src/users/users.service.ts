@@ -9,12 +9,14 @@ import { MailerService } from '@nestjs-modules/mailer';
 import * as bcrypt from 'bcrypt';
 import { eq } from 'drizzle-orm';
 import { users } from 'src/db/schema';
+import { FileUploadService } from 'src/file-upload/file-upload.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @Inject('DATABASE') private db: any,
     private readonly mailerService: MailerService,
+    private readonly fileUploadService: FileUploadService,
   ) {}
 
   private generateVerificationCode(): string {
@@ -136,5 +138,40 @@ export class UserService {
       .returning();
 
     return updatedUser[0];
+  }
+
+  async updateProfilePicture(
+    userId: number,
+    file: Express.Multer.File,
+  ): Promise<string> {
+    const user = await this.db.query.users.findFirst({
+      where: eq(users.id, userId),
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const key = `profile-pictures/${userId}-${Date.now()}-${file.originalname}`;
+    const s3Key = await this.fileUploadService.uploadFile(file, key);
+
+    await this.db
+      .update(users)
+      .set({ pictureUrl: s3Key })
+      .where(eq(users.id, userId));
+
+    return s3Key;
+  }
+
+  async getProfilePictureUrl(userId: number): Promise<string> {
+    const user = await this.db.query.users.findFirst({
+      where: eq(users.id, userId),
+    });
+
+    if (!user || !user.pictureUrl) {
+      throw new NotFoundException('Profile picture not found');
+    }
+
+    return this.fileUploadService.getPresignedUrl(user.pictureUrl);
   }
 }
