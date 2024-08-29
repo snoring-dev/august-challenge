@@ -116,6 +116,36 @@ export class UserService {
     });
   }
 
+  async getUserById(userId: number) {
+    const user = await this.db.query.users.findFirst({
+      where: eq(users.id, userId),
+      columns: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        phoneNumber: true,
+        pictureUrl: true,
+        emailConfirmation: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const pictureUrl = await this.fileUploadService.getPresignedUrl(
+      user.pictureUrl,
+    );
+
+    return {
+      ...user,
+      pictureUrl,
+    };
+  }
+
   async updateUserInfo(
     userId: number,
     updateData: Partial<{

@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Request,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -77,5 +78,12 @@ export class UsersController {
   @Get(':id/profile-picture-url')
   async getProfilePictureUrl(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.getProfilePictureUrl(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('get-user-data')
+  async getUserData(@Request() req) {
+    const userId = req.user.userId;
+    return this.usersService.getUserById(userId);
   }
 }
