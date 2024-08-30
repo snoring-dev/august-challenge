@@ -21,9 +21,9 @@ export class FileUploadService {
   }
 
   private async optimizeImage(buffer: Buffer): Promise<Buffer> {
-    const width = this.configService.get<number>('MAX_IMAGE_WIDTH');
-    const height = this.configService.get<number>('MAX_IMAGE_WIDTH');
-    const quality = this.configService.get<number>('IMAGE_QUALITY');
+    const width = Number(this.configService.get<number>('MAX_IMAGE_WIDTH'));
+    const height = Number(this.configService.get<number>('MAX_IMAGE_WIDTH'));
+    const quality = Number(this.configService.get<number>('IMAGE_QUALITY'));
 
     return sharp(buffer)
       .resize(width, height, {
