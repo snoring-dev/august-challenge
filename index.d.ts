@@ -9,6 +9,9 @@ const envVariables = z.object({
   POSTGRES_HOST: z.string(),
   POSTGRES_PASSWORD: z.string(),
   POSTGRES_DATABASE: z.string(),
+  MAX_IMAGE_WIDTH: z.number(),
+  MAX_IMAGE_HEIGHT: z.number(),
+  IMAGE_QUALITY: z.number(),
 });
 
 envVariables.parse(process.env);
