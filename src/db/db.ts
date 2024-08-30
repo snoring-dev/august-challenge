@@ -15,9 +15,7 @@ logger.log(
 
 const pool = new Pool({
   connectionString,
-  ssl: {
-    rejectUnauthorized: true,
-  },
+  ssl: false,
 });
 
 export const db = drizzle(pool, { schema });
