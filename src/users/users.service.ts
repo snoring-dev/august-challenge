@@ -136,14 +136,18 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
 
-    const pictureUrl = await this.fileUploadService.getPresignedUrl(
-      user.pictureUrl,
-    );
+    if (user.pictureUrl) {
+      const pictureUrl = await this.fileUploadService.getPresignedUrl(
+        user.pictureUrl,
+      );
 
-    return {
-      ...user,
-      pictureUrl,
-    };
+      return {
+        ...user,
+        pictureUrl,
+      };
+    }
+
+    return user;
   }
 
   async updateUserInfo(
